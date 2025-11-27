@@ -2,24 +2,16 @@ import { IClienteRepository } from "../../../domain/repositories/IClienteReposit
 import { ICacheService } from "../../../infrastructure/cache/interfaces/ICacheService";
 import { NotFoundError } from "../../../shared/types/errors";
 import { IUseCase } from "../interfaces/IUseCase";
+import { ClienteResponseDTO } from "../../dtos/ClienteDTO";
 
 export interface BuscarClientePorIdInput {
   id: string;
 }
 
-export interface BuscarClientePorIdOutput {
-  id: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export class BuscarClientePorIdUseCase
-  implements IUseCase<BuscarClientePorIdInput, BuscarClientePorIdOutput>
+  implements IUseCase<BuscarClientePorIdInput, ClienteResponseDTO>
 {
-  private readonly CACHE_TTL = 3600; // 1 hora
+  private readonly CACHE_TTL = 3600;
   private readonly CACHE_PREFIX = "cliente:";
 
   constructor(
@@ -27,9 +19,7 @@ export class BuscarClientePorIdUseCase
     private readonly cacheService: ICacheService
   ) {}
 
-  async execute(
-    input: BuscarClientePorIdInput
-  ): Promise<BuscarClientePorIdOutput> {
+  async execute(input: BuscarClientePorIdInput): Promise<ClienteResponseDTO> {
     const cacheKey = `${this.CACHE_PREFIX}${input.id}`;
 
     const cachedCliente = await this.getFromCache(cacheKey);
@@ -43,7 +33,7 @@ export class BuscarClientePorIdUseCase
       throw new NotFoundError("Cliente", input.id);
     }
 
-    const output: BuscarClientePorIdOutput = {
+    const output: ClienteResponseDTO = {
       id: cliente.id!,
       nome: cliente.nome,
       email: cliente.email,
@@ -58,11 +48,9 @@ export class BuscarClientePorIdUseCase
     return output;
   }
 
-  private async getFromCache(
-    key: string
-  ): Promise<BuscarClientePorIdOutput | null> {
+  private async getFromCache(key: string): Promise<ClienteResponseDTO | null> {
     try {
-      return await this.cacheService.get<BuscarClientePorIdOutput>(key);
+      return await this.cacheService.get<ClienteResponseDTO>(key);
     } catch (error) {
       console.error("Erro ao buscar no cache:", error);
       return null;
@@ -71,7 +59,7 @@ export class BuscarClientePorIdUseCase
 
   private async saveToCache(
     key: string,
-    data: BuscarClientePorIdOutput
+    data: ClienteResponseDTO
   ): Promise<void> {
     try {
       await this.cacheService.set(key, data, this.CACHE_TTL);

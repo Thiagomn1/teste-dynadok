@@ -5,31 +5,20 @@ import { ConflictError, ValidationError } from "../../../shared/types/errors";
 import { ClienteCriadoEvent, QueueNames } from "../../../shared/types/events";
 import { Validators } from "../../../shared/utils/validators";
 import { IUseCase } from "../interfaces/IUseCase";
-
-export interface CriarClienteInput {
-  nome: string;
-  email: string;
-  telefone: string;
-}
-
-export interface CriarClienteOutput {
-  id: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import {
+  CreateClienteDTO,
+  ClienteResponseDTO,
+} from "../../dtos/ClienteDTO";
 
 export class CriarClienteUseCase
-  implements IUseCase<CriarClienteInput, CriarClienteOutput>
+  implements IUseCase<CreateClienteDTO, ClienteResponseDTO>
 {
   constructor(
     private readonly clienteRepository: IClienteRepository,
     private readonly messageProducer: IMessageProducer
   ) {}
 
-  async execute(input: CriarClienteInput): Promise<CriarClienteOutput> {
+  async execute(input: CreateClienteDTO): Promise<ClienteResponseDTO> {
     await this.validate(input);
 
     const clienteExistente = await this.clienteRepository.findByEmail(
@@ -55,7 +44,7 @@ export class CriarClienteUseCase
     };
   }
 
-  private async validate(input: CriarClienteInput): Promise<void> {
+  private async validate(input: CreateClienteDTO): Promise<void> {
     const errors: string[] = [];
 
     if (!Validators.isNotEmpty(input.nome)) {

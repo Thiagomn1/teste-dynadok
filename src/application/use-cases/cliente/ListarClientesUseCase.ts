@@ -1,31 +1,16 @@
 import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
 import { IUseCase } from "../interfaces/IUseCase";
-
-export type ListarClientesInput = void;
-
-export interface ClienteListItem {
-  id: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface ListarClientesOutput {
-  clientes: ClienteListItem[];
-  total: number;
-}
+import { ListClientesResponseDTO } from "../../dtos/ClienteDTO";
 
 export class ListarClientesUseCase
-  implements IUseCase<ListarClientesInput, ListarClientesOutput>
+  implements IUseCase<void, ListClientesResponseDTO>
 {
   constructor(private readonly clienteRepository: IClienteRepository) {}
 
-  async execute(): Promise<ListarClientesOutput> {
+  async execute(): Promise<ListClientesResponseDTO> {
     const clientes = await this.clienteRepository.findAll();
 
-    const clientesList: ClienteListItem[] = clientes.map((cliente) => ({
+    const clientesList = clientes.map((cliente) => ({
       id: cliente.id!,
       nome: cliente.nome,
       email: cliente.email,

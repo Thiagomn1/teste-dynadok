@@ -2,32 +2,24 @@ import { IClienteRepository } from "../../../domain/repositories/IClienteReposit
 import { ICacheService } from "../../../infrastructure/cache/interfaces/ICacheService";
 import { NotFoundError, ConflictError } from "../../../shared/types/errors";
 import { IUseCase } from "../interfaces/IUseCase";
+import {
+  UpdateClienteDTO,
+  ClienteResponseDTO,
+} from "../../dtos/ClienteDTO";
 
-export interface AtualizarClienteInput {
+export interface AtualizarClienteInput extends UpdateClienteDTO {
   id: string;
-  nome?: string;
-  email?: string;
-  telefone?: string;
-}
-
-export interface AtualizarClienteOutput {
-  id: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export class AtualizarClienteUseCase
-  implements IUseCase<AtualizarClienteInput, AtualizarClienteOutput>
+  implements IUseCase<AtualizarClienteInput, ClienteResponseDTO>
 {
   constructor(
     private readonly clienteRepository: IClienteRepository,
     private readonly cacheService: ICacheService
   ) {}
 
-  async execute(input: AtualizarClienteInput): Promise<AtualizarClienteOutput> {
+  async execute(input: AtualizarClienteInput): Promise<ClienteResponseDTO> {
     const clienteExistente = await this.clienteRepository.findById(input.id);
     if (!clienteExistente) {
       throw new NotFoundError("Cliente", input.id);
