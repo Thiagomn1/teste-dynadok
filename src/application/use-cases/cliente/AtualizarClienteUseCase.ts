@@ -1,11 +1,13 @@
 import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
 import { ICacheService } from "../../../infrastructure/cache/interfaces/ICacheService";
+import { IMessageProducer } from "../../../infrastructure/messaging/interfaces/IMessageProducer";
 import { NotFoundError, ConflictError } from "../../../shared/types/errors";
 import { IUseCase } from "../interfaces/IUseCase";
 import {
   UpdateClienteDTO,
   ClienteResponseDTO,
 } from "../../dtos/ClienteDTO";
+import { ClienteAtualizadoEvent, QueueNames } from "../../../shared/types/events";
 
 export interface AtualizarClienteInput extends UpdateClienteDTO {
   id: string;
@@ -16,7 +18,8 @@ export class AtualizarClienteUseCase
 {
   constructor(
     private readonly clienteRepository: IClienteRepository,
-    private readonly cacheService: ICacheService
+    private readonly cacheService: ICacheService,
+    private readonly messageProducer: IMessageProducer
   ) {}
 
   async execute(input: AtualizarClienteInput): Promise<ClienteResponseDTO> {
@@ -45,6 +48,7 @@ export class AtualizarClienteUseCase
     }
 
     await this.invalidateCache(input.id);
+    await this.publishClienteAtualizadoEvent(clienteAtualizado.id!, input);
 
     return {
       id: clienteAtualizado.id!,
@@ -61,6 +65,26 @@ export class AtualizarClienteUseCase
       await this.cacheService.delete(`cliente:${clienteId}`);
     } catch (error) {
       console.error("Erro ao invalidar cache:", error);
+    }
+  }
+
+  private async publishClienteAtualizadoEvent(
+    clienteId: string,
+    updates: UpdateClienteDTO
+  ): Promise<void> {
+    try {
+      const event: ClienteAtualizadoEvent = {
+        eventType: "CLIENTE_ATUALIZADO",
+        timestamp: new Date(),
+        data: {
+          id: clienteId,
+          ...updates,
+        },
+      };
+
+      await this.messageProducer.publish(QueueNames.CLIENTE_ATUALIZADO, event);
+    } catch (error) {
+      console.error("Erro ao publicar evento de cliente atualizado:", error);
     }
   }
 }

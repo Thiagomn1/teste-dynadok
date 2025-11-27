@@ -105,7 +105,8 @@ export class Container {
 
     this.atualizarClienteUseCase = new AtualizarClienteUseCase(
       this.clienteRepository,
-      this.cacheService
+      this.cacheService,
+      this.messageProducer
     );
   }
 
