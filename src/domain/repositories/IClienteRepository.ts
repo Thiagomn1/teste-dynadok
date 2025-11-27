@@ -1,5 +1,5 @@
-import { Cliente } from '../entities/Cliente';
-import { IBaseRepository } from './IBaseRepository';
+import { Cliente } from "../entities/Cliente";
+import { IBaseRepository } from "./IBaseRepository";
 
 /**
  * IClienteRepository

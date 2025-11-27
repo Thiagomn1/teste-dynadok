@@ -2,8 +2,6 @@
  * BaseEntity
  *
  * Entidade base que contém campos genéricos compartilhados por todas as entidades do domínio.
- * Seguindo os princípios de Clean Architecture, esta classe representa a camada mais interna
- * e não possui dependências externas.
  */
 export abstract class BaseEntity {
   /**

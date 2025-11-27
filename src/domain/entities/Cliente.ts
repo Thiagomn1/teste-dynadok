@@ -1,4 +1,5 @@
-import { BaseEntity } from './BaseEntity';
+import { BaseEntity } from "./BaseEntity";
+import { Validators } from "../../shared/utils/validators";
 
 /**
  * Cliente
@@ -35,25 +36,17 @@ export class Cliente extends BaseEntity {
    * @throws Error se os dados forem inválidos
    */
   private validate(): void {
-    if (!this.nome || this.nome.trim().length === 0) {
-      throw new Error('Nome é obrigatório');
+    if (!Validators.isNotEmpty(this.nome)) {
+      throw new Error("Nome é obrigatório");
     }
 
-    if (!this.email || !this.isValidEmail(this.email)) {
-      throw new Error('Email inválido');
+    if (!Validators.isValidEmail(this.email)) {
+      throw new Error("Email inválido");
     }
 
-    if (!this.telefone || this.telefone.trim().length === 0) {
-      throw new Error('Telefone é obrigatório');
+    if (!Validators.isValidBrazilianPhone(this.telefone)) {
+      throw new Error("Telefone inválido");
     }
-  }
-
-  /**
-   * Valida o formato do email
-   */
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
   }
 
   /**
