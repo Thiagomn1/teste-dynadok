@@ -56,3 +56,27 @@ export class MessagingError extends Error {
     Object.setPrototypeOf(this, MessagingError.prototype);
   }
 }
+
+export class UnauthorizedError extends DomainError {
+  constructor(message: string) {
+    super(message);
+    this.name = "UnauthorizedError";
+    Object.setPrototypeOf(this, UnauthorizedError.prototype);
+  }
+}
+
+export class ForbiddenError extends DomainError {
+  constructor(message: string) {
+    super(message);
+    this.name = "ForbiddenError";
+    Object.setPrototypeOf(this, ForbiddenError.prototype);
+  }
+}
+
+export class ExternalServiceError extends Error {
+  constructor(message: string, public readonly originalError?: unknown) {
+    super(message);
+    this.name = "ExternalServiceError";
+    Object.setPrototypeOf(this, ExternalServiceError.prototype);
+  }
+}

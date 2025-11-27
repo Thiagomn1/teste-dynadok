@@ -19,7 +19,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongodb": "^7.0.0",
-    "redis": "^5.10.0"
+    "redis": "^5.10.0",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.8",
