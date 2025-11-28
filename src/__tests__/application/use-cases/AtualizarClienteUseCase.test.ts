@@ -1,0 +1,157 @@
+import { describe, it, expect, beforeEach } from "@jest/globals";
+import { AtualizarClienteUseCase } from "../../../application/use-cases/cliente/AtualizarClienteUseCase";
+import { Cliente } from "../../../domain/entities/Cliente";
+import { MockRepository } from "../../mocks/MockRepository";
+import { MockCacheService } from "../../mocks/MockCacheService";
+import { MockMessageProducer } from "../../mocks/MockMessageProducer";
+import { NotFoundError, ConflictError } from "../../../shared/types/errors";
+import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
+
+class MockClienteRepository
+  extends MockRepository<Cliente>
+  implements IClienteRepository
+{
+  async findByEmail(email: string): Promise<Cliente | null> {
+    const all = await this.findAll();
+    return all.find((c) => c.email === email) || null;
+  }
+
+  async findByNome(_nome: string): Promise<Cliente[]> {
+    return [];
+  }
+
+  async findByTelefone(_telefone: string): Promise<Cliente | null> {
+    return null;
+  }
+}
+
+describe("AtualizarClienteUseCase", () => {
+  let useCase: AtualizarClienteUseCase;
+  let repository: MockClienteRepository;
+  let cacheService: MockCacheService;
+  let messageProducer: MockMessageProducer;
+
+  beforeEach(() => {
+    repository = new MockClienteRepository();
+    cacheService = new MockCacheService();
+    messageProducer = new MockMessageProducer();
+    useCase = new AtualizarClienteUseCase(
+      repository,
+      cacheService,
+      messageProducer
+    );
+  });
+
+  it("deve atualizar um cliente existente", async () => {
+    const cliente = new Cliente(
+      "João Silva",
+      "joao@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    const result = await useCase.execute({
+      id: created.id!,
+      nome: "João Silva Santos",
+      email: "joao@example.com",
+      telefone: "(11) 91234-5678",
+    });
+
+    expect(result.nome).toBe("João Silva Santos");
+    expect(result.telefone).toBe("(11) 91234-5678");
+    expect(result.email).toBe("joao@example.com");
+  });
+
+  it("deve invalidar cache após atualizar", async () => {
+    const cliente = new Cliente(
+      "Maria Silva",
+      "maria@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    await cacheService.set(`cliente:${created.id}`, created);
+    expect(await cacheService.exists(`cliente:${created.id}`)).toBe(true);
+
+    await useCase.execute({
+      id: created.id!,
+      nome: "Maria Santos",
+    });
+
+    expect(await cacheService.exists(`cliente:${created.id}`)).toBe(false);
+  });
+
+  it("deve publicar evento CLIENTE_ATUALIZADO", async () => {
+    const cliente = new Cliente(
+      "Pedro Santos",
+      "pedro@example.com",
+      "(21) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    await useCase.execute({
+      id: created.id!,
+      nome: "Pedro Santos Silva",
+    });
+
+    const messages = messageProducer.getMessages("cliente.atualizado");
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toMatchObject({
+      eventType: "CLIENTE_ATUALIZADO",
+      data: {
+        id: created.id,
+        nome: "Pedro Santos Silva",
+      },
+    });
+  });
+
+  it("deve lançar NotFoundError se cliente não existe", async () => {
+    await expect(
+      useCase.execute({
+        id: "id-inexistente",
+        nome: "Test",
+      })
+    ).rejects.toThrow(NotFoundError);
+  });
+
+  it("deve lançar ConflictError ao tentar usar email já existente", async () => {
+    const cliente1 = new Cliente(
+      "Cliente 1",
+      "email1@example.com",
+      "(11) 98765-4321"
+    );
+    await repository.create(cliente1);
+
+    const cliente2 = new Cliente(
+      "Cliente 2",
+      "email2@example.com",
+      "(11) 91234-5678"
+    );
+    const created2 = await repository.create(cliente2);
+
+    await expect(
+      useCase.execute({
+        id: created2.id!,
+        email: "email1@example.com",
+      })
+    ).rejects.toThrow(ConflictError);
+  });
+
+  it("deve permitir atualizar mantendo o mesmo email", async () => {
+    const cliente = new Cliente(
+      "João Silva",
+      "joao@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    const result = await useCase.execute({
+      id: created.id!,
+      nome: "João Santos",
+      email: "joao@example.com",
+    });
+
+    expect(result.nome).toBe("João Santos");
+    expect(result.email).toBe("joao@example.com");
+  });
+});
