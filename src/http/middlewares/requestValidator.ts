@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ValidationError } from "../../shared/types/errors";
-import { Validators } from "../../shared/utils/validators";
+import { ValidationError } from "@shared/types/errors";
+import { Validators } from "@shared/utils/validators";
 
 export interface ValidationSchema {
   body?: Record<string, ValidationRule>;

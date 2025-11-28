@@ -1,4 +1,4 @@
-import { ClienteCriadoEvent } from "../../../shared/types/events";
+import { ClienteCriadoEvent } from "@shared/types/events";
 
 export class ClienteCriadoHandler {
   async handle(event: ClienteCriadoEvent): Promise<void> {

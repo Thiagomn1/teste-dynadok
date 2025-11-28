@@ -1,13 +1,13 @@
-import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
-import { ICacheService } from "../../../infrastructure/cache/interfaces/ICacheService";
-import { IMessageProducer } from "../../../infrastructure/messaging/interfaces/IMessageProducer";
-import { NotFoundError, ConflictError } from "../../../shared/types/errors";
-import { IUseCase } from "../interfaces/IUseCase";
+import { IClienteRepository } from "@domain/repositories/IClienteRepository";
+import { ICacheService } from "@infrastructure/cache/interfaces/ICacheService";
+import { IMessageProducer } from "@infrastructure/messaging/interfaces/IMessageProducer";
+import { NotFoundError, ConflictError } from "@shared/types/errors";
+import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
 import {
   UpdateClienteDTO,
   ClienteResponseDTO,
-} from "../../dtos/ClienteDTO";
-import { ClienteAtualizadoEvent, QueueNames } from "../../../shared/types/events";
+} from "@application/dtos/ClienteDTO";
+import { ClienteAtualizadoEvent, QueueNames } from "@shared/types/events";
 
 export interface AtualizarClienteInput extends UpdateClienteDTO {
   id: string;

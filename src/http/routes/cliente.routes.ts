@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { ClienteController } from "../controllers/ClienteController";
-import { validateRequest } from "../middlewares/requestValidator";
+import { ClienteController } from "@http/controllers/ClienteController";
+import { validateRequest } from "@http/middlewares/requestValidator";
 
 export function createClienteRoutes(
   clienteController: ClienteController

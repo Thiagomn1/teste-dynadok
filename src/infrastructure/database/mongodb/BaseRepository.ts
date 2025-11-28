@@ -6,9 +6,9 @@ import {
   WithId,
   Document,
 } from "mongodb";
-import { BaseEntity } from "../../../domain/entities/BaseEntity";
-import { IBaseRepository } from "../../../domain/repositories/IBaseRepository";
-import { DatabaseError } from "../../../shared/types/errors";
+import { BaseEntity } from "@domain/entities/BaseEntity";
+import { IBaseRepository } from "@domain/repositories/IBaseRepository";
+import { DatabaseError } from "@shared/types/errors";
 
 export abstract class BaseRepository<T extends BaseEntity>
   implements IBaseRepository<T>

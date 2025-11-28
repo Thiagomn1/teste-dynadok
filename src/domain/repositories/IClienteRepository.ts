@@ -1,4 +1,4 @@
-import { Cliente } from "../entities/Cliente";
+import { Cliente } from "@domain/entities/Cliente";
 import { IBaseRepository } from "./IBaseRepository";
 
 /**

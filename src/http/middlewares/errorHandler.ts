@@ -7,8 +7,8 @@ import {
   ForbiddenError,
   DatabaseError,
   ExternalServiceError,
-} from "../../shared/types/errors";
-import { logger } from "../../shared/utils/logger";
+} from "@shared/types/errors";
+import { logger } from "@shared/utils/logger";
 
 export function errorHandler(
   error: Error,

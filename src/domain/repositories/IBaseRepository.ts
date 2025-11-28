@@ -1,4 +1,4 @@
-import { BaseEntity } from "../entities/BaseEntity";
+import { BaseEntity } from "@domain/entities/BaseEntity";
 
 /**
  * IBaseRepository<T>

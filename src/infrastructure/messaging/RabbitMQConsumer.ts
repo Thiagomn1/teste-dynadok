@@ -1,6 +1,6 @@
 import amqp, { Channel, ConsumeMessage } from "amqplib";
 import { IMessageConsumer } from "./interfaces/IMessageConsumer";
-import { MessagingError } from "../../shared/types/errors";
+import { MessagingError } from "@shared/types/errors";
 
 type RabbitMQConnection = Awaited<ReturnType<typeof amqp.connect>>;
 

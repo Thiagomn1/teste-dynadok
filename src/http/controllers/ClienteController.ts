@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { CriarClienteUseCase } from "../../application/use-cases/cliente/CriarClienteUseCase";
-import { BuscarClientePorIdUseCase } from "../../application/use-cases/cliente/BuscarClientePorIdUseCase";
-import { ListarClientesUseCase } from "../../application/use-cases/cliente/ListarClientesUseCase";
-import { AtualizarClienteUseCase } from "../../application/use-cases/cliente/AtualizarClienteUseCase";
+import { CriarClienteUseCase } from "@application/use-cases/cliente/CriarClienteUseCase";
+import { BuscarClientePorIdUseCase } from "@application/use-cases/cliente/BuscarClientePorIdUseCase";
+import { ListarClientesUseCase } from "@application/use-cases/cliente/ListarClientesUseCase";
+import { AtualizarClienteUseCase } from "@application/use-cases/cliente/AtualizarClienteUseCase";
 
 export class ClienteController {
   constructor(

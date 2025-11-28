@@ -1,17 +1,17 @@
 import { Db } from "mongodb";
 import { createClient, RedisClientType } from "redis";
-import { MongoDBConnection } from "../database/mongodb/connection";
-import { ClienteRepository } from "../database/mongodb/ClienteRepository";
-import { RedisCacheService } from "../cache/RedisCacheService";
-import { RabbitMQProducer } from "../messaging/RabbitMQProducer";
-import { RabbitMQConsumer } from "../messaging/RabbitMQConsumer";
-import { CriarClienteUseCase } from "../../application/use-cases/cliente/CriarClienteUseCase";
-import { BuscarClientePorIdUseCase } from "../../application/use-cases/cliente/BuscarClientePorIdUseCase";
-import { ListarClientesUseCase } from "../../application/use-cases/cliente/ListarClientesUseCase";
-import { AtualizarClienteUseCase } from "../../application/use-cases/cliente/AtualizarClienteUseCase";
-import { ClienteController } from "../../http/controllers/ClienteController";
-import { config } from "../config/env";
-import { logger } from "../../shared/utils/logger";
+import { MongoDBConnection } from "@infrastructure/database/mongodb/connection";
+import { ClienteRepository } from "@infrastructure/database/mongodb/ClienteRepository";
+import { RedisCacheService } from "@infrastructure/cache/RedisCacheService";
+import { RabbitMQProducer } from "@infrastructure/messaging/RabbitMQProducer";
+import { RabbitMQConsumer } from "@infrastructure/messaging/RabbitMQConsumer";
+import { CriarClienteUseCase } from "@application/use-cases/cliente/CriarClienteUseCase";
+import { BuscarClientePorIdUseCase } from "@application/use-cases/cliente/BuscarClientePorIdUseCase";
+import { ListarClientesUseCase } from "@application/use-cases/cliente/ListarClientesUseCase";
+import { AtualizarClienteUseCase } from "@application/use-cases/cliente/AtualizarClienteUseCase";
+import { ClienteController } from "@http/controllers/ClienteController";
+import { config } from "@infrastructure/config/env";
+import { logger } from "@shared/utils/logger";
 
 export class Container {
   private static instance: Container;

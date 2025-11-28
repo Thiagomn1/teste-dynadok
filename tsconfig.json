@@ -28,6 +28,7 @@
       "@domain/*": ["domain/*"],
       "@application/*": ["application/*"],
       "@infrastructure/*": ["infrastructure/*"],
+      "@http/*": ["http/*"],
       "@shared/*": ["shared/*"]
     }
   },

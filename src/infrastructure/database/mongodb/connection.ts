@@ -1,5 +1,5 @@
 import { MongoClient, Db } from "mongodb";
-import { DatabaseError } from "../../../shared/types/errors";
+import { DatabaseError } from "@shared/types/errors";
 
 export class MongoDBConnection {
   private static instance: MongoDBConnection;

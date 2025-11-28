@@ -1,8 +1,8 @@
-import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
-import { ICacheService } from "../../../infrastructure/cache/interfaces/ICacheService";
-import { NotFoundError } from "../../../shared/types/errors";
-import { IUseCase } from "../interfaces/IUseCase";
-import { ClienteResponseDTO } from "../../dtos/ClienteDTO";
+import { IClienteRepository } from "@domain/repositories/IClienteRepository";
+import { ICacheService } from "@infrastructure/cache/interfaces/ICacheService";
+import { NotFoundError } from "@shared/types/errors";
+import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
+import { ClienteResponseDTO } from "@application/dtos/ClienteDTO";
 
 export interface BuscarClientePorIdInput {
   id: string;

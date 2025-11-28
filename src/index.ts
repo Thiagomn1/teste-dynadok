@@ -1,11 +1,11 @@
 import express from "express";
-import { config } from "./infrastructure/config/env";
-import { Container } from "./infrastructure/container";
-import { createRoutes } from "./http/routes";
-import { requestLogger } from "./http/middlewares/requestLogger";
-import { errorHandler } from "./http/middlewares/errorHandler";
-import { HealthController } from "./http/controllers/HealthController";
-import { logger } from "./shared/utils/logger";
+import { config } from "@infrastructure/config/env";
+import { Container } from "@infrastructure/container";
+import { createRoutes } from "@http/routes";
+import { requestLogger } from "@http/middlewares/requestLogger";
+import { errorHandler } from "@http/middlewares/errorHandler";
+import { HealthController } from "@http/controllers/HealthController";
+import { logger } from "@shared/utils/logger";
 
 async function bootstrap() {
   try {

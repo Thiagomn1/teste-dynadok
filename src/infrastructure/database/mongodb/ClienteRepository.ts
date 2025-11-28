@@ -1,8 +1,8 @@
 import { Db, WithId, Document } from "mongodb";
-import { Cliente } from "../../../domain/entities/Cliente";
-import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
-import { BaseRepository } from "./BaseRepository";
-import { DatabaseError } from "../../../shared/types/errors";
+import { Cliente } from "@domain/entities/Cliente";
+import { IClienteRepository } from "@domain/repositories/IClienteRepository";
+import { BaseRepository } from "@infrastructure/database/mongodb/BaseRepository";
+import { DatabaseError } from "@shared/types/errors";
 
 export class ClienteRepository
   extends BaseRepository<Cliente>

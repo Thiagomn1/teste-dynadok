@@ -1,5 +1,5 @@
-import { BaseEntity } from "./BaseEntity";
-import { Validators } from "../../shared/utils/validators";
+import { BaseEntity } from "@domain/entities/BaseEntity";
+import { Validators } from "@shared/utils/validators";
 
 /**
  * Cliente

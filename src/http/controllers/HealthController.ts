@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { MongoDBConnection } from "../../infrastructure/database/mongodb/connection";
+import { MongoDBConnection } from "@infrastructure/database/mongodb/connection";
 import { createClient } from "redis";
-import { config } from "../../infrastructure/config/env";
+import { config } from "@infrastructure/config/env";
 
 export class HealthController {
   async check(_req: Request, res: Response): Promise<void> {

@@ -1,6 +1,6 @@
-import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
-import { IUseCase } from "../interfaces/IUseCase";
-import { ListClientesResponseDTO } from "../../dtos/ClienteDTO";
+import { IClienteRepository } from "@domain/repositories/IClienteRepository";
+import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
+import { ListClientesResponseDTO } from "@application/dtos/ClienteDTO";
 
 export class ListarClientesUseCase
   implements IUseCase<void, ListClientesResponseDTO>

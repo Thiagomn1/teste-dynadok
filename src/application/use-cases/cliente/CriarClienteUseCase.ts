@@ -1,14 +1,14 @@
-import { Cliente } from "../../../domain/entities/Cliente";
-import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
-import { IMessageProducer } from "../../../infrastructure/messaging/interfaces/IMessageProducer";
-import { ConflictError, ValidationError } from "../../../shared/types/errors";
-import { ClienteCriadoEvent, QueueNames } from "../../../shared/types/events";
-import { Validators } from "../../../shared/utils/validators";
-import { IUseCase } from "../interfaces/IUseCase";
+import { Cliente } from "@domain/entities/Cliente";
+import { IClienteRepository } from "@domain/repositories/IClienteRepository";
+import { IMessageProducer } from "@infrastructure/messaging/interfaces/IMessageProducer";
+import { ConflictError, ValidationError } from "@shared/types/errors";
+import { ClienteCriadoEvent, QueueNames } from "@shared/types/events";
+import { Validators } from "@shared/utils/validators";
+import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
 import {
   CreateClienteDTO,
   ClienteResponseDTO,
-} from "../../dtos/ClienteDTO";
+} from "@application/dtos/ClienteDTO";
 
 export class CriarClienteUseCase
   implements IUseCase<CreateClienteDTO, ClienteResponseDTO>
