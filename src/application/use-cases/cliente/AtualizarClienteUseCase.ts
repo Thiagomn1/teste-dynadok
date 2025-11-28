@@ -16,6 +16,8 @@ export interface AtualizarClienteInput extends UpdateClienteDTO {
 export class AtualizarClienteUseCase
   implements IUseCase<AtualizarClienteInput, ClienteResponseDTO>
 {
+  private readonly LIST_CACHE_KEY = "clientes:list";
+
   constructor(
     private readonly clienteRepository: IClienteRepository,
     private readonly cacheService: ICacheService,
@@ -63,6 +65,7 @@ export class AtualizarClienteUseCase
   private async invalidateCache(clienteId: string): Promise<void> {
     try {
       await this.cacheService.delete(`cliente:${clienteId}`);
+      await this.cacheService.delete(this.LIST_CACHE_KEY);
     } catch (error) {
       console.error("Erro ao invalidar cache:", error);
     }

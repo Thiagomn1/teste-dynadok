@@ -91,7 +91,8 @@ export class Container {
   private initializeUseCases(): void {
     this.criarClienteUseCase = new CriarClienteUseCase(
       this.clienteRepository,
-      this.messageProducer
+      this.messageProducer,
+      this.cacheService
     );
 
     this.buscarClientePorIdUseCase = new BuscarClientePorIdUseCase(
@@ -100,7 +101,8 @@ export class Container {
     );
 
     this.listarClientesUseCase = new ListarClientesUseCase(
-      this.clienteRepository
+      this.clienteRepository,
+      this.cacheService
     );
 
     this.atualizarClienteUseCase = new AtualizarClienteUseCase(

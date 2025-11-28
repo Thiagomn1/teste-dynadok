@@ -11,7 +11,7 @@ export interface BuscarClientePorIdInput {
 export class BuscarClientePorIdUseCase
   implements IUseCase<BuscarClientePorIdInput, ClienteResponseDTO>
 {
-  private readonly CACHE_TTL = 3600;
+  private readonly CACHE_TTL = 300; // 5 minutos
   private readonly CACHE_PREFIX = "cliente:";
 
   constructor(

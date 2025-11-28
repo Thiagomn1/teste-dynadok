@@ -1,0 +1,4 @@
+@apiurl = http://localhost:3000
+
+### Get Clients
+GET {{apiurl}}/api/clientes/6927923c4b1ddf9777cf4fd7

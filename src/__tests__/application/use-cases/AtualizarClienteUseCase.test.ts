@@ -154,4 +154,60 @@ describe("AtualizarClienteUseCase", () => {
     expect(result.nome).toBe("João Santos");
     expect(result.email).toBe("joao@example.com");
   });
+
+  it("deve invalidar cache da lista ao atualizar cliente", async () => {
+    const cliente = new Cliente(
+      "João Silva",
+      "joao@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    const cachedData = {
+      clientes: [
+        {
+          id: created.id,
+          nome: "João Silva",
+          email: "joao@example.com",
+          telefone: "(11) 98765-4321",
+          createdAt: created.createdAt,
+          updatedAt: created.updatedAt,
+        },
+      ],
+      total: 1,
+    };
+
+    await cacheService.set("clientes:list", cachedData, 300);
+
+    await useCase.execute({
+      id: created.id!,
+      nome: "João Santos",
+    });
+
+    const cached = await cacheService.get("clientes:list");
+    expect(cached).toBeNull();
+  });
+
+  it("deve invalidar tanto cache individual quanto cache da lista", async () => {
+    const cliente = new Cliente(
+      "Ana Silva",
+      "ana@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    await cacheService.set(`cliente:${created.id}`, created, 300);
+    await cacheService.set("clientes:list", { clientes: [created], total: 1 }, 300);
+
+    expect(await cacheService.exists(`cliente:${created.id}`)).toBe(true);
+    expect(await cacheService.exists("clientes:list")).toBe(true);
+
+    await useCase.execute({
+      id: created.id!,
+      nome: "Ana Santos",
+    });
+
+    expect(await cacheService.exists(`cliente:${created.id}`)).toBe(false);
+    expect(await cacheService.exists("clientes:list")).toBe(false);
+  });
 });

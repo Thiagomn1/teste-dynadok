@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "@jest/globals";
 import { ListarClientesUseCase } from "../../../application/use-cases/cliente/ListarClientesUseCase";
 import { Cliente } from "../../../domain/entities/Cliente";
 import { MockRepository } from "../../mocks/MockRepository";
+import { MockCacheService } from "../../mocks/MockCacheService";
 import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
 
 class MockClienteRepository
@@ -24,10 +25,12 @@ class MockClienteRepository
 describe("ListarClientesUseCase", () => {
   let useCase: ListarClientesUseCase;
   let repository: MockClienteRepository;
+  let cacheService: MockCacheService;
 
   beforeEach(() => {
     repository = new MockClienteRepository();
-    useCase = new ListarClientesUseCase(repository);
+    cacheService = new MockCacheService();
+    useCase = new ListarClientesUseCase(repository, cacheService);
   });
 
   it("deve retornar lista vazia quando não há clientes", async () => {
@@ -89,5 +92,59 @@ describe("ListarClientesUseCase", () => {
 
     expect(result.total).toBe(10);
     expect(result.clientes).toHaveLength(10);
+  });
+
+  it("deve salvar lista no cache após buscar do banco", async () => {
+    await repository.create(
+      new Cliente("João Silva", "joao@example.com", "(11) 98765-4321")
+    );
+
+    const result = await useCase.execute();
+
+    expect(result.clientes).toHaveLength(1);
+
+    const cached = await cacheService.get("clientes:list");
+    expect(cached).toBeDefined();
+    expect(cached).toEqual(result);
+  });
+
+  it("deve retornar dados do cache se disponível", async () => {
+    const cachedData = {
+      clientes: [
+        {
+          id: "cached-id",
+          nome: "Cliente Cached",
+          email: "cached@example.com",
+          telefone: "(11) 98765-4321",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      total: 1,
+    };
+
+    await cacheService.set("clientes:list", cachedData, 300);
+
+    await repository.create(
+      new Cliente("João Silva", "joao@example.com", "(11) 98765-4321")
+    );
+
+    const result = await useCase.execute();
+
+    expect(result).toEqual(cachedData);
+    expect(result.clientes[0].id).toBe("cached-id");
+  });
+
+  it("deve buscar do banco se cache estiver vazio", async () => {
+    await repository.create(
+      new Cliente("João Silva", "joao@example.com", "(11) 98765-4321")
+    );
+
+    await cacheService.delete("clientes:list");
+
+    const result = await useCase.execute();
+
+    expect(result.clientes).toHaveLength(1);
+    expect(result.clientes[0].nome).toBe("João Silva");
   });
 });

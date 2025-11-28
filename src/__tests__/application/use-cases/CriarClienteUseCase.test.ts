@@ -3,6 +3,7 @@ import { CriarClienteUseCase } from "../../../application/use-cases/cliente/Cria
 import { Cliente } from "../../../domain/entities/Cliente";
 import { MockRepository } from "../../mocks/MockRepository";
 import { MockMessageProducer } from "../../mocks/MockMessageProducer";
+import { MockCacheService } from "../../mocks/MockCacheService";
 import { ConflictError, ValidationError } from "../../../shared/types/errors";
 import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
 
@@ -28,11 +29,13 @@ describe("CriarClienteUseCase", () => {
   let useCase: CriarClienteUseCase;
   let repository: MockClienteRepository;
   let messageProducer: MockMessageProducer;
+  let cacheService: MockCacheService;
 
   beforeEach(() => {
     repository = new MockClienteRepository();
     messageProducer = new MockMessageProducer();
-    useCase = new CriarClienteUseCase(repository, messageProducer);
+    cacheService = new MockCacheService();
+    useCase = new CriarClienteUseCase(repository, messageProducer, cacheService);
   });
 
   it("deve criar um cliente com dados válidos", async () => {
@@ -114,5 +117,55 @@ describe("CriarClienteUseCase", () => {
     };
 
     await expect(useCase.execute(input)).rejects.toThrow(ValidationError);
+  });
+
+  it("deve invalidar cache da lista ao criar novo cliente", async () => {
+    const cachedData = {
+      clientes: [
+        {
+          id: "old-id",
+          nome: "Cliente Antigo",
+          email: "old@example.com",
+          telefone: "(11) 98765-4321",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      total: 1,
+    };
+
+    await cacheService.set("clientes:list", cachedData, 300);
+
+    const input = {
+      nome: "Novo Cliente",
+      email: "novo@example.com",
+      telefone: "(11) 98765-4321",
+    };
+
+    await useCase.execute(input);
+
+    const cached = await cacheService.get("clientes:list");
+    expect(cached).toBeNull();
+  });
+
+  it("deve criar cliente mesmo se invalidação de cache falhar", async () => {
+    const input = {
+      nome: "João Silva",
+      email: "joao@example.com",
+      telefone: "(11) 98765-4321",
+    };
+
+    cacheService.delete = async () => {
+      throw new Error("Cache service error");
+    };
+
+    const result = await useCase.execute(input);
+
+    expect(result).toMatchObject({
+      nome: input.nome,
+      email: input.email,
+      telefone: input.telefone,
+    });
+    expect(result.id).toBeDefined();
   });
 });

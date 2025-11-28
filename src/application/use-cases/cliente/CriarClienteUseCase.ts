@@ -1,5 +1,6 @@
 import { Cliente } from "@domain/entities/Cliente";
 import { IClienteRepository } from "@domain/repositories/IClienteRepository";
+import { ICacheService } from "@infrastructure/cache/interfaces/ICacheService";
 import { IMessageProducer } from "@infrastructure/messaging/interfaces/IMessageProducer";
 import { ConflictError, ValidationError } from "@shared/types/errors";
 import { ClienteCriadoEvent, QueueNames } from "@shared/types/events";
@@ -13,9 +14,12 @@ import {
 export class CriarClienteUseCase
   implements IUseCase<CreateClienteDTO, ClienteResponseDTO>
 {
+  private readonly LIST_CACHE_KEY = "clientes:list";
+
   constructor(
     private readonly clienteRepository: IClienteRepository,
-    private readonly messageProducer: IMessageProducer
+    private readonly messageProducer: IMessageProducer,
+    private readonly cacheService: ICacheService
   ) {}
 
   async execute(input: CreateClienteDTO): Promise<ClienteResponseDTO> {
@@ -31,6 +35,8 @@ export class CriarClienteUseCase
     const cliente = new Cliente(input.nome, input.email, input.telefone);
 
     const clienteCriado = await this.clienteRepository.create(cliente);
+
+    await this.invalidateCache();
 
     await this.publishClienteCriadoEvent(clienteCriado);
 
@@ -61,6 +67,14 @@ export class CriarClienteUseCase
 
     if (errors.length > 0) {
       throw new ValidationError("Dados inválidos para criar cliente", errors);
+    }
+  }
+
+  private async invalidateCache(): Promise<void> {
+    try {
+      await this.cacheService.delete(this.LIST_CACHE_KEY);
+    } catch (error) {
+      console.error("Erro ao invalidar cache:", error);
     }
   }
 
