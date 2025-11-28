@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "@jest/globals";
 import { MockRepository } from "../../mocks/MockRepository";
 import { BaseEntity } from "../../../domain/entities/BaseEntity";
 
-class TestEntity extends BaseEntity {
+class MockEntity extends BaseEntity {
   constructor(
     public name: string,
     public value: number,
@@ -13,15 +13,15 @@ class TestEntity extends BaseEntity {
 }
 
 describe("BaseRepository", () => {
-  let repository: MockRepository<TestEntity>;
+  let repository: MockRepository<MockEntity>;
 
   beforeEach(() => {
-    repository = new MockRepository<TestEntity>();
+    repository = new MockRepository<MockEntity>();
     repository.clear();
   });
 
   it("deve criar uma entidade com sucesso", async () => {
-    const entity = new TestEntity("Test", 100);
+    const entity = new MockEntity("Test", 100);
     const created = await repository.create(entity);
 
     expect(created.id).toBeDefined();
@@ -30,7 +30,7 @@ describe("BaseRepository", () => {
   });
 
   it("deve buscar entidade por ID", async () => {
-    const entity = new TestEntity("Test", 100);
+    const entity = new MockEntity("Test", 100);
     const created = await repository.create(entity);
 
     const found = await repository.findById(created.id!);
@@ -46,9 +46,9 @@ describe("BaseRepository", () => {
   });
 
   it("deve listar todas as entidades", async () => {
-    await repository.create(new TestEntity("Test1", 100));
-    await repository.create(new TestEntity("Test2", 200));
-    await repository.create(new TestEntity("Test3", 300));
+    await repository.create(new MockEntity("Test1", 100));
+    await repository.create(new MockEntity("Test2", 200));
+    await repository.create(new MockEntity("Test3", 300));
 
     const all = await repository.findAll();
 
@@ -56,7 +56,7 @@ describe("BaseRepository", () => {
   });
 
   it("deve atualizar uma entidade existente", async () => {
-    const entity = new TestEntity("Original", 100);
+    const entity = new MockEntity("Original", 100);
     const created = await repository.create(entity);
 
     const updated = await repository.update(created.id!, {
@@ -78,7 +78,7 @@ describe("BaseRepository", () => {
   });
 
   it("deve deletar uma entidade existente", async () => {
-    const entity = new TestEntity("Test", 100);
+    const entity = new MockEntity("Test", 100);
     const created = await repository.create(entity);
 
     const deleted = await repository.delete(created.id!);
@@ -96,7 +96,7 @@ describe("BaseRepository", () => {
   });
 
   it("deve verificar se entidade existe", async () => {
-    const entity = new TestEntity("Test", 100);
+    const entity = new MockEntity("Test", 100);
     const created = await repository.create(entity);
 
     const exists = await repository.exists(created.id!);
