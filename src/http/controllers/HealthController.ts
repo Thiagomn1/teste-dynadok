@@ -34,7 +34,7 @@ export class HealthController {
     } catch (error) {
       return {
         status: "down",
-        message: error instanceof Error ? error.message : "Unknown error",
+        message: error instanceof Error ? error.message : "Error desconhecido",
       };
     }
   }
@@ -58,7 +58,7 @@ export class HealthController {
       }
       return {
         status: "down",
-        message: error instanceof Error ? error.message : "Unknown error",
+        message: error instanceof Error ? error.message : "Error desconhecido",
       };
     }
   }

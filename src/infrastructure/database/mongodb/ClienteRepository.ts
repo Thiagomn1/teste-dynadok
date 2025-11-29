@@ -45,27 +45,4 @@ export class ClienteRepository
       throw new DatabaseError("Erro ao buscar cliente por email", error);
     }
   }
-
-  async findByNome(nome: string): Promise<Cliente[]> {
-    try {
-      const docs = await this.collection
-        .find({
-          nome: { $regex: nome, $options: "i" },
-        })
-        .toArray();
-
-      return docs.map((doc) => this.toEntity(doc));
-    } catch (error) {
-      throw new DatabaseError("Erro ao buscar clientes por nome", error);
-    }
-  }
-
-  async findByTelefone(telefone: string): Promise<Cliente | null> {
-    try {
-      const doc = await this.collection.findOne({ telefone });
-      return doc ? this.toEntity(doc) : null;
-    } catch (error) {
-      throw new DatabaseError("Erro ao buscar cliente por telefone", error);
-    }
-  }
 }

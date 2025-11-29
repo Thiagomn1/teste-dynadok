@@ -5,6 +5,8 @@ import { ClienteRepository } from "@infrastructure/database/mongodb/ClienteRepos
 import { RedisCacheService } from "@infrastructure/cache/RedisCacheService";
 import { RabbitMQProducer } from "@infrastructure/messaging/RabbitMQProducer";
 import { RabbitMQConsumer } from "@infrastructure/messaging/RabbitMQConsumer";
+import { ClienteCriadoHandler } from "@infrastructure/messaging/handlers/ClienteCriadoHandler";
+import { ClienteAtualizadoHandler } from "@infrastructure/messaging/handlers/ClienteAtualizadoHandler";
 import { CriarClienteUseCase } from "@application/use-cases/cliente/CriarClienteUseCase";
 import { BuscarClientePorIdUseCase } from "@application/use-cases/cliente/BuscarClientePorIdUseCase";
 import { ListarClientesUseCase } from "@application/use-cases/cliente/ListarClientesUseCase";
@@ -12,6 +14,11 @@ import { AtualizarClienteUseCase } from "@application/use-cases/cliente/Atualiza
 import { ClienteController } from "@http/controllers/ClienteController";
 import { config } from "@infrastructure/config/env";
 import { logger } from "@shared/utils/logger";
+import {
+  ClienteCriadoEvent,
+  ClienteAtualizadoEvent,
+  QueueNames,
+} from "@shared/types/events";
 
 export class Container {
   private static instance: Container;
@@ -42,14 +49,14 @@ export class Container {
   }
 
   async initialize(): Promise<void> {
-    logger.info("Initializing container...");
+    logger.info("Inicializando container...");
 
     await this.initializeInfrastructure();
     this.initializeRepositories();
     this.initializeUseCases();
     this.initializeControllers();
 
-    logger.info("Container initialized successfully");
+    logger.info("Container inicializado com sucesso");
   }
 
   private async initializeInfrastructure(): Promise<void> {
@@ -59,7 +66,7 @@ export class Container {
       "client-management"
     );
     this.db = this.mongoConnection.getDatabase();
-    logger.info("MongoDB connected");
+    logger.info("MongoDB conectado");
 
     this.redisClient = createClient({
       socket: {
@@ -73,15 +80,18 @@ export class Container {
       config.cache.redisPort
     );
     await this.cacheService.connect();
-    logger.info("Redis connected");
+    logger.info("Redis conectado");
 
     this.messageProducer = new RabbitMQProducer(config.messaging.rabbitmqUrl);
     await this.messageProducer.connect();
-    logger.info("RabbitMQ Producer connected");
+    logger.info("RabbitMQ Producer conectado");
 
     this.messageConsumer = new RabbitMQConsumer(config.messaging.rabbitmqUrl);
     await this.messageConsumer.connect();
-    logger.info("RabbitMQ Consumer connected");
+    logger.info("RabbitMQ Consumer conectado");
+
+    // Registrar handlers de eventos
+    await this.registerEventHandlers();
   }
 
   private initializeRepositories(): void {
@@ -121,8 +131,31 @@ export class Container {
     );
   }
 
+  private async registerEventHandlers(): Promise<void> {
+    const clienteCriadoHandler = new ClienteCriadoHandler();
+    const clienteAtualizadoHandler = new ClienteAtualizadoHandler();
+
+    await this.messageConsumer.consume(
+      QueueNames.CLIENTE_CRIADO,
+      async (message) => {
+        await clienteCriadoHandler.handle(message as ClienteCriadoEvent);
+      }
+    );
+
+    await this.messageConsumer.consume(
+      QueueNames.CLIENTE_ATUALIZADO,
+      async (message) => {
+        await clienteAtualizadoHandler.handle(
+          message as ClienteAtualizadoEvent
+        );
+      }
+    );
+
+    logger.info("Event handlers registrados");
+  }
+
   async shutdown(): Promise<void> {
-    logger.info("Shutting down container...");
+    logger.info("Desligando container...");
 
     await this.messageConsumer.disconnect();
     await this.messageProducer.disconnect();
@@ -130,6 +163,6 @@ export class Container {
     await this.redisClient.quit();
     await this.mongoConnection.disconnect();
 
-    logger.info("Container shut down successfully");
+    logger.info("Container desligado com sucesso");
   }
 }

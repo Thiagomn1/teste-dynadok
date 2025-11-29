@@ -12,14 +12,6 @@ class MockClienteRepository
   async findByEmail(_email: string): Promise<Cliente | null> {
     return null;
   }
-
-  async findByNome(_nome: string): Promise<Cliente[]> {
-    return [];
-  }
-
-  async findByTelefone(_telefone: string): Promise<Cliente | null> {
-    return null;
-  }
 }
 
 describe("ListarClientesUseCase", () => {

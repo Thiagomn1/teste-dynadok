@@ -15,14 +15,6 @@ class MockClienteRepository
     const all = await this.findAll();
     return all.find((c) => c.email === email) || null;
   }
-
-  async findByNome(_nome: string): Promise<Cliente[]> {
-    return [];
-  }
-
-  async findByTelefone(_telefone: string): Promise<Cliente | null> {
-    return null;
-  }
 }
 
 describe("CriarClienteUseCase", () => {
@@ -35,7 +27,11 @@ describe("CriarClienteUseCase", () => {
     repository = new MockClienteRepository();
     messageProducer = new MockMessageProducer();
     cacheService = new MockCacheService();
-    useCase = new CriarClienteUseCase(repository, messageProducer, cacheService);
+    useCase = new CriarClienteUseCase(
+      repository,
+      messageProducer,
+      cacheService
+    );
   });
 
   it("deve criar um cliente com dados válidos", async () => {

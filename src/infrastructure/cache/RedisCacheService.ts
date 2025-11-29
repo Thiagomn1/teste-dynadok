@@ -26,7 +26,7 @@ export class RedisCacheService implements ICacheService {
       });
 
       this.client.on("error", (err) => {
-        console.error("Redis Client Error:", err);
+        console.error("Erro no cliente Redis:", err);
       });
 
       this.client.on("connect", () => {

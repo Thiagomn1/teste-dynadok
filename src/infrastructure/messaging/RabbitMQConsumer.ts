@@ -25,11 +25,11 @@ export class RabbitMQConsumer implements IMessageConsumer {
       console.log("RabbitMQ Consumer conectado");
 
       this.connection.on("error", (err: Error) => {
-        console.error("RabbitMQ Consumer Connection Error:", err);
+        console.error("Erro ao conectar ao RabbitMQ Consumer:", err);
       });
 
       this.connection.on("close", () => {
-        console.log("RabbitMQ Consumer Connection closed");
+        console.log("Conexão do RabbitMQ Consumer fechada");
       });
     } catch (error) {
       throw new MessagingError("Erro ao conectar ao RabbitMQ Consumer", error);

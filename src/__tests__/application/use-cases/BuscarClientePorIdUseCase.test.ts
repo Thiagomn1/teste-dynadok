@@ -13,14 +13,6 @@ class MockClienteRepository
   async findByEmail(_email: string): Promise<Cliente | null> {
     return null;
   }
-
-  async findByNome(_nome: string): Promise<Cliente[]> {
-    return [];
-  }
-
-  async findByTelefone(_telefone: string): Promise<Cliente | null> {
-    return null;
-  }
 }
 
 describe("BuscarClientePorIdUseCase", () => {
@@ -87,8 +79,8 @@ describe("BuscarClientePorIdUseCase", () => {
   });
 
   it("deve lançar NotFoundError se cliente não existe", async () => {
-    await expect(
-      useCase.execute({ id: "id-inexistente" })
-    ).rejects.toThrow(NotFoundError);
+    await expect(useCase.execute({ id: "id-inexistente" })).rejects.toThrow(
+      NotFoundError
+    );
   });
 });

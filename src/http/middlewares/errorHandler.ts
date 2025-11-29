@@ -16,7 +16,7 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ): void {
-  logger.error("Error occurred", {
+  logger.error("Erro ocorreu", {
     error: error.message,
     stack: error.stack,
     name: error.name,

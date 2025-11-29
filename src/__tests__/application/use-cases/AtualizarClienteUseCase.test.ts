@@ -15,14 +15,6 @@ class MockClienteRepository
     const all = await this.findAll();
     return all.find((c) => c.email === email) || null;
   }
-
-  async findByNome(_nome: string): Promise<Cliente[]> {
-    return [];
-  }
-
-  async findByTelefone(_telefone: string): Promise<Cliente | null> {
-    return null;
-  }
 }
 
 describe("AtualizarClienteUseCase", () => {
@@ -197,7 +189,11 @@ describe("AtualizarClienteUseCase", () => {
     const created = await repository.create(cliente);
 
     await cacheService.set(`cliente:${created.id}`, created, 300);
-    await cacheService.set("clientes:list", { clientes: [created], total: 1 }, 300);
+    await cacheService.set(
+      "clientes:list",
+      { clientes: [created], total: 1 },
+      300
+    );
 
     expect(await cacheService.exists(`cliente:${created.id}`)).toBe(true);
     expect(await cacheService.exists("clientes:list")).toBe(true);
