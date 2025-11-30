@@ -32,7 +32,12 @@ export class Cliente extends BaseEntity {
   }
 
   /**
-   * Valida os dados do cliente
+   * Valida os dados do cliente no momento da criação
+   *
+   * Validações básicas são feitas aqui para garantir que a entidade
+   * não seja criada em estado inválido. Validações mais complexas
+   * (como unicidade de email) são responsabilidade dos Use Cases.
+   *
    * @throws Error se os dados forem inválidos
    */
   private validate(): void {
@@ -47,31 +52,5 @@ export class Cliente extends BaseEntity {
     if (!Validators.isValidBrazilianPhone(this.telefone)) {
       throw new Error("Telefone inválido");
     }
-  }
-
-  /**
-   * Atualiza os dados do cliente
-   */
-  public atualizar(nome?: string, email?: string, telefone?: string): void {
-    if (nome) this.nome = nome;
-    if (email) this.email = email;
-    if (telefone) this.telefone = telefone;
-
-    this.validate();
-    this.touch();
-  }
-
-  /**
-   * Retorna uma representação em objeto simples do cliente
-   */
-  public toJSON() {
-    return {
-      id: this.id,
-      nome: this.nome,
-      email: this.email,
-      telefone: this.telefone,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    };
   }
 }
