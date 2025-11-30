@@ -2,12 +2,11 @@ import { IClienteRepository } from "@domain/repositories/IClienteRepository";
 import { ICacheService } from "@infrastructure/cache/interfaces/ICacheService";
 import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
 import { ListClientesResponseDTO } from "@application/dtos/ClienteDTO";
+import { CacheTTL, CacheKeys } from "@shared/constants/cache";
 
 export class ListarClientesUseCase
   implements IUseCase<void, ListClientesResponseDTO>
 {
-  private readonly CACHE_TTL = 300; // 5 minutos
-  private readonly CACHE_PREFIX = "clientes:list";
 
   constructor(
     private readonly clienteRepository: IClienteRepository,
@@ -16,7 +15,7 @@ export class ListarClientesUseCase
 
   async execute(): Promise<ListClientesResponseDTO> {
     const cached = await this.cacheService.get<ListClientesResponseDTO>(
-      this.CACHE_PREFIX
+      CacheKeys.CLIENTE_LIST
     );
 
     if (cached) {
@@ -38,7 +37,11 @@ export class ListarClientesUseCase
       total: clientes.length,
     };
 
-    await this.cacheService.set(this.CACHE_PREFIX, response, this.CACHE_TTL);
+    await this.cacheService.set(
+      CacheKeys.CLIENTE_LIST,
+      response,
+      CacheTTL.SHORT
+    );
     console.log("Lista de clientes salva no cache");
 
     return response;

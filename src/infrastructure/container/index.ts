@@ -90,7 +90,6 @@ export class Container {
     await this.messageConsumer.connect();
     logger.info("RabbitMQ Consumer conectado");
 
-    // Registrar handlers de eventos
     await this.registerEventHandlers();
   }
 

@@ -1,8 +1,3 @@
-/**
- * Eventos de domínio
- * Definem os eventos que podem ser disparados no sistema
- */
-
 export interface DomainEvent {
   eventType: string;
   timestamp: Date;
@@ -10,7 +5,7 @@ export interface DomainEvent {
 }
 
 export interface ClienteCriadoEvent extends DomainEvent {
-  eventType: 'CLIENTE_CRIADO';
+  eventType: "CLIENTE_CRIADO";
   data: {
     id: string;
     nome: string;
@@ -20,7 +15,7 @@ export interface ClienteCriadoEvent extends DomainEvent {
 }
 
 export interface ClienteAtualizadoEvent extends DomainEvent {
-  eventType: 'CLIENTE_ATUALIZADO';
+  eventType: "CLIENTE_ATUALIZADO";
   data: {
     id: string;
     nome?: string;
@@ -30,17 +25,14 @@ export interface ClienteAtualizadoEvent extends DomainEvent {
 }
 
 export interface ClienteRemovidoEvent extends DomainEvent {
-  eventType: 'CLIENTE_REMOVIDO';
+  eventType: "CLIENTE_REMOVIDO";
   data: {
     id: string;
   };
 }
 
-/**
- * Nomes das filas
- */
 export const QueueNames = {
-  CLIENTE_CRIADO: 'cliente.criado',
-  CLIENTE_ATUALIZADO: 'cliente.atualizado',
-  CLIENTE_REMOVIDO: 'cliente.removido',
+  CLIENTE_CRIADO: "cliente.criado",
+  CLIENTE_ATUALIZADO: "cliente.atualizado",
+  CLIENTE_REMOVIDO: "cliente.removido",
 } as const;

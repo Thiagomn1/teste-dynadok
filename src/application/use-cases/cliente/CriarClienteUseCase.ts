@@ -10,11 +10,11 @@ import {
   CreateClienteDTO,
   ClienteResponseDTO,
 } from "@application/dtos/ClienteDTO";
+import { CacheKeys } from "@shared/constants/cache";
 
 export class CriarClienteUseCase
   implements IUseCase<CreateClienteDTO, ClienteResponseDTO>
 {
-  private readonly LIST_CACHE_KEY = "clientes:list";
 
   constructor(
     private readonly clienteRepository: IClienteRepository,
@@ -72,7 +72,7 @@ export class CriarClienteUseCase
 
   private async invalidateCache(): Promise<void> {
     try {
-      await this.cacheService.delete(this.LIST_CACHE_KEY);
+      await this.cacheService.delete(CacheKeys.CLIENTE_LIST);
     } catch (error) {
       console.error("Erro ao invalidar cache:", error);
     }

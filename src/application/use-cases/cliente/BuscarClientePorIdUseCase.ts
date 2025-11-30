@@ -3,6 +3,7 @@ import { ICacheService } from "@infrastructure/cache/interfaces/ICacheService";
 import { NotFoundError } from "@shared/types/errors";
 import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
 import { ClienteResponseDTO } from "@application/dtos/ClienteDTO";
+import { CacheTTL, CacheKeys } from "@shared/constants/cache";
 
 export interface BuscarClientePorIdInput {
   id: string;
@@ -11,8 +12,6 @@ export interface BuscarClientePorIdInput {
 export class BuscarClientePorIdUseCase
   implements IUseCase<BuscarClientePorIdInput, ClienteResponseDTO>
 {
-  private readonly CACHE_TTL = 300; // 5 minutos
-  private readonly CACHE_PREFIX = "cliente:";
 
   constructor(
     private readonly clienteRepository: IClienteRepository,
@@ -20,7 +19,7 @@ export class BuscarClientePorIdUseCase
   ) {}
 
   async execute(input: BuscarClientePorIdInput): Promise<ClienteResponseDTO> {
-    const cacheKey = `${this.CACHE_PREFIX}${input.id}`;
+    const cacheKey = CacheKeys.CLIENTE_BY_ID(input.id);
 
     const cachedCliente = await this.getFromCache(cacheKey);
     if (cachedCliente) {
@@ -62,7 +61,7 @@ export class BuscarClientePorIdUseCase
     data: ClienteResponseDTO
   ): Promise<void> {
     try {
-      await this.cacheService.set(key, data, this.CACHE_TTL);
+      await this.cacheService.set(key, data, CacheTTL.SHORT);
     } catch (error) {
       console.error("Erro ao salvar no cache:", error);
     }

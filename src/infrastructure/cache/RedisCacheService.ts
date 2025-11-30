@@ -1,10 +1,11 @@
 import { createClient, RedisClientType } from "redis";
 import { ICacheService } from "./interfaces/ICacheService";
 import { CacheError } from "@shared/types/errors";
+import { CacheTTL } from "@shared/constants/cache";
 
 export class RedisCacheService implements ICacheService {
   private client: RedisClientType | null = null;
-  private readonly defaultTTL: number = 3600; // 1 hora em segundos
+  private readonly defaultTTL: number = CacheTTL.DEFAULT;
 
   constructor(
     private readonly host: string = "localhost",
