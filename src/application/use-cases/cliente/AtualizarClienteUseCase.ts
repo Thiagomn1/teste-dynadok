@@ -1,13 +1,18 @@
 import { IClienteRepository } from "@domain/repositories/IClienteRepository";
 import { ICacheService } from "@infrastructure/cache/interfaces/ICacheService";
 import { IMessageProducer } from "@infrastructure/messaging/interfaces/IMessageProducer";
-import { NotFoundError, ConflictError } from "@shared/types/errors";
+import {
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+} from "@shared/types/errors";
 import { IUseCase } from "@application/use-cases/interfaces/IUseCase";
 import {
   UpdateClienteDTO,
   ClienteResponseDTO,
 } from "@application/dtos/ClienteDTO";
 import { ClienteAtualizadoEvent, QueueNames } from "@shared/types/events";
+import { Validators } from "@shared/utils/validators";
 
 export interface AtualizarClienteInput extends UpdateClienteDTO {
   id: string;
@@ -30,6 +35,8 @@ export class AtualizarClienteUseCase
       throw new NotFoundError("Cliente", input.id);
     }
 
+    await this.validate(input);
+
     if (input.email && input.email !== clienteExistente.email) {
       const clienteComEmail = await this.clienteRepository.findByEmail(
         input.email
@@ -39,11 +46,20 @@ export class AtualizarClienteUseCase
       }
     }
 
-    const clienteAtualizado = await this.clienteRepository.update(input.id, {
-      nome: input.nome,
-      email: input.email,
-      telefone: input.telefone,
-    });
+    const updateData: Partial<{
+      nome: string;
+      email: string;
+      telefone: string;
+    }> = {};
+
+    if (input.nome !== undefined) updateData.nome = input.nome;
+    if (input.email !== undefined) updateData.email = input.email;
+    if (input.telefone !== undefined) updateData.telefone = input.telefone;
+
+    const clienteAtualizado = await this.clienteRepository.update(
+      input.id,
+      updateData
+    );
 
     if (!clienteAtualizado) {
       throw new NotFoundError("Cliente", input.id);
@@ -60,6 +76,32 @@ export class AtualizarClienteUseCase
       createdAt: clienteAtualizado.createdAt,
       updatedAt: clienteAtualizado.updatedAt,
     };
+  }
+
+  private async validate(input: UpdateClienteDTO): Promise<void> {
+    const errors: string[] = [];
+
+    if (input.nome !== undefined && !Validators.isNotEmpty(input.nome)) {
+      errors.push("Nome não pode ser vazio");
+    }
+
+    if (input.email !== undefined && !Validators.isValidEmail(input.email)) {
+      errors.push("Email é inválido");
+    }
+
+    if (
+      input.telefone !== undefined &&
+      !Validators.isValidBrazilianPhone(input.telefone)
+    ) {
+      errors.push("Telefone é inválido");
+    }
+
+    if (errors.length > 0) {
+      throw new ValidationError(
+        "Dados inválidos para atualizar cliente",
+        errors
+      );
+    }
   }
 
   private async invalidateCache(clienteId: string): Promise<void> {

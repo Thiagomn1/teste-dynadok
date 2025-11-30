@@ -4,7 +4,11 @@ import { Cliente } from "../../../domain/entities/Cliente";
 import { MockRepository } from "../../mocks/MockRepository";
 import { MockCacheService } from "../../mocks/MockCacheService";
 import { MockMessageProducer } from "../../mocks/MockMessageProducer";
-import { NotFoundError, ConflictError } from "../../../shared/types/errors";
+import {
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+} from "../../../shared/types/errors";
 import { IClienteRepository } from "../../../domain/repositories/IClienteRepository";
 
 class MockClienteRepository
@@ -205,5 +209,71 @@ describe("AtualizarClienteUseCase", () => {
 
     expect(await cacheService.exists(`cliente:${created.id}`)).toBe(false);
     expect(await cacheService.exists("clientes:list")).toBe(false);
+  });
+
+  it("deve lançar ValidationError ao tentar atualizar com nome vazio", async () => {
+    const cliente = new Cliente(
+      "João Silva",
+      "joao@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    await expect(
+      useCase.execute({
+        id: created.id!,
+        nome: "",
+      })
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("deve lançar ValidationError ao tentar atualizar com email inválido", async () => {
+    const cliente = new Cliente(
+      "Maria Silva",
+      "maria@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    await expect(
+      useCase.execute({
+        id: created.id!,
+        email: "email-invalido",
+      })
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("deve lançar ValidationError ao tentar atualizar com telefone inválido", async () => {
+    const cliente = new Cliente(
+      "Pedro Santos",
+      "pedro@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    await expect(
+      useCase.execute({
+        id: created.id!,
+        telefone: "123",
+      })
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it("deve permitir atualizar sem validar campos não fornecidos", async () => {
+    const cliente = new Cliente(
+      "Carlos Silva",
+      "carlos@example.com",
+      "(11) 98765-4321"
+    );
+    const created = await repository.create(cliente);
+
+    const result = await useCase.execute({
+      id: created.id!,
+      nome: "Carlos Santos",
+    });
+
+    expect(result.nome).toBe("Carlos Santos");
+    expect(result.email).toBe("carlos@example.com");
+    expect(result.telefone).toBe("(11) 98765-4321");
   });
 });
