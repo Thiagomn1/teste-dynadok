@@ -83,12 +83,16 @@ curl http://localhost:3000/health
 
 ```json
 {
-  "status": "ok",
-  "timestamp": "2025-11-29T...",
+  "status": "healthy",
+  "timestamp": "2025-12...",
+  "uptime": 15.5,
   "services": {
-    "mongodb": "connected",
-    "redis": "connected",
-    "rabbitmq": "connected"
+    "mongodb": {
+      "status": "up"
+    },
+    "redis": {
+      "status": "up"
+    }
   }
 }
 ```
@@ -172,12 +176,16 @@ GET /health
 
 ```json
 {
-  "status": "ok",
-  "timestamp": "2025-11-28T04:00:00.000Z",
+  "status": "healthy",
+  "timestamp": "2025-12-01T00:15:50.647Z",
+  "uptime": 26.445880579,
   "services": {
-    "mongodb": "connected",
-    "redis": "connected",
-    "rabbitmq": "connected"
+    "mongodb": {
+      "status": "up"
+    },
+    "redis": {
+      "status": "up"
+    }
   }
 }
 ```
@@ -201,13 +209,14 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "id": "674a1b2c3d4e5f6a7b8c9d0e",
+    "id": "692cde9c23ea7e8da8b746e7",
     "nome": "João Silva",
-    "email": "joao@example.com",
+    "email": "joao.silva@example.com",
     "telefone": "(11) 98765-4321",
-    "createdAt": "2025-11-28T04:00:00.000Z",
-    "updatedAt": "2025-11-28T04:00:00.000Z"
-  }
+    "createdAt": "2025-12-01T00:17:32.981Z",
+    "updatedAt": "2025-12-01T00:17:32.981Z"
+  },
+  "message": "Cliente criado com sucesso"
 }
 ```
 
@@ -222,19 +231,17 @@ GET /api/clientes
 ```json
 {
   "success": true,
-  "data": {
-    "clientes": [
-      {
-        "id": "674a1b2c3d4e5f6a7b8c9d0e",
-        "nome": "João Silva",
-        "email": "joao@example.com",
-        "telefone": "(11) 98765-4321",
-        "createdAt": "2025-11-28T04:00:00.000Z",
-        "updatedAt": "2025-11-28T04:00:00.000Z"
-      }
-    ],
-    "total": 1
-  }
+  "data": [
+    {
+      "id": "692bbce75314bc44b26cf237",
+      "nome": "João Silva Santos Updated",
+      "email": "joao.updated@example.com",
+      "telefone": "(11) 99999-9999",
+      "createdAt": "2025-11-30T03:41:27.163Z",
+      "updatedAt": "2025-11-30T03:48:29.708Z"
+    }
+  ],
+  "total": 1
 }
 ```
 
@@ -294,13 +301,14 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "id": "674a1b2c3d4e5f6a7b8c9d0e",
-    "nome": "João Silva Santos",
-    "email": "joao@example.com",
+    "id": "692bbce75314bc44b26cf237",
+    "nome": "John Doe",
+    "email": "joao.updated@example.com",
     "telefone": "(11) 99999-9999",
-    "createdAt": "2025-11-28T04:00:00.000Z",
-    "updatedAt": "2025-11-28T04:05:00.000Z"
-  }
+    "createdAt": "2025-11-30T03:41:27.163Z",
+    "updatedAt": "2025-12-01T00:18:46.596Z"
+  },
+  "message": "Cliente atualizado com sucesso"
 }
 ```
 
@@ -309,36 +317,6 @@ Content-Type: application/json
 - Email deve ser único
 - Telefone deve estar no formato brasileiro: `(XX) XXXXX-XXXX` ou `(XX) XXXX-XXXX`
 - Nome não pode estar vazio
-
-### Erros Comuns
-
-**400 Bad Request** - Validação falhou:
-
-```json
-{
-  "success": false,
-  "error": {
-    "type": "ValidationError",
-    "message": "Dados inválidos para criar cliente",
-    "details": [
-      "Email é obrigatório ou inválido",
-      "Telefone é obrigatório ou inválido"
-    ]
-  }
-}
-```
-
-**409 Conflict** - Email duplicado:
-
-```json
-{
-  "success": false,
-  "error": {
-    "type": "ConflictError",
-    "message": "Já existe um cliente com este email"
-  }
-}
-```
 
 ## 🧪 Testes
 
