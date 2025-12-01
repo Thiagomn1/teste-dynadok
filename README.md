@@ -53,8 +53,8 @@ Este projeto segue os princípios de **Clean Architecture** com separação clar
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/client-management.git
-cd client-management
+git clone https://github.com/seu-usuario/teste-dynadok.git
+cd teste-dynadok
 ```
 
 ### 2. Inicie todos os serviços com Docker
