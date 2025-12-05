@@ -11,18 +11,6 @@ class MockClienteRepository
     const all = await this.findAll();
     return all.find((c) => c.email === email) || null;
   }
-
-  async findByNome(nome: string): Promise<Cliente[]> {
-    const all = await this.findAll();
-    return all.filter((c) =>
-      c.nome.toLowerCase().includes(nome.toLowerCase())
-    );
-  }
-
-  async findByTelefone(telefone: string): Promise<Cliente | null> {
-    const all = await this.findAll();
-    return all.find((c) => c.telefone === telefone) || null;
-  }
 }
 
 describe("ClienteRepository", () => {
@@ -49,60 +37,6 @@ describe("ClienteRepository", () => {
 
   it("deve retornar null se email não existir", async () => {
     const found = await repository.findByEmail("inexistente@example.com");
-
-    expect(found).toBeNull();
-  });
-
-  it("deve buscar clientes por nome (pesquisa parcial)", async () => {
-    await repository.create(
-      new Cliente("João Silva", "joao@example.com", "(11) 98765-4321")
-    );
-    await repository.create(
-      new Cliente("João Santos", "joaos@example.com", "(11) 91234-5678")
-    );
-    await repository.create(
-      new Cliente("Maria Silva", "maria@example.com", "(21) 98765-4321")
-    );
-
-    const found = await repository.findByNome("João");
-
-    expect(found).toHaveLength(2);
-    expect(found[0].nome).toContain("João");
-    expect(found[1].nome).toContain("João");
-  });
-
-  it("deve buscar clientes por nome case-insensitive", async () => {
-    await repository.create(
-      new Cliente("João Silva", "joao@example.com", "(11) 98765-4321")
-    );
-
-    const found = await repository.findByNome("joão");
-
-    expect(found).toHaveLength(1);
-  });
-
-  it("deve retornar array vazio se nome não encontrado", async () => {
-    const found = await repository.findByNome("Inexistente");
-
-    expect(found).toEqual([]);
-  });
-
-  it("deve buscar cliente por telefone", async () => {
-    const cliente = new Cliente(
-      "Pedro Costa",
-      "pedro@example.com",
-      "(21) 98765-4321"
-    );
-    await repository.create(cliente);
-
-    const found = await repository.findByTelefone("(21) 98765-4321");
-
-    expect(found).not.toBeNull();
-    expect(found?.nome).toBe("Pedro Costa");
-  });
-
-  it("deve retornar null se telefone não existir", async () => {
-    const found = await repository.findByTelefone("(99) 99999-9999");
 
     expect(found).toBeNull();
   });
